@@ -85,9 +85,10 @@ if not ScreenGui.Parent then
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
+-- фон невидим, клики по игре не перекрывает
 local LoadingScreen = Create("Frame", {
     Size = UDim2.fromScale(1, 1),
-    BackgroundColor3 = Color3.fromRGB(12, 14, 20),
+    BackgroundTransparency = 1,
     BorderSizePixel = 0,
     ZIndex = 500,
     Parent = ScreenGui,
@@ -188,6 +189,26 @@ local function setStatus(text, color)
     if color then StatusLabel.TextColor3 = color end
 end
 
+-- прячет только бокс, фон не трогает
+local function hideLoader()
+    local fadeInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    TweenService:Create(LoadingContainer, fadeInfo, {
+        BackgroundTransparency = 1,
+        Size = UDim2.fromOffset(380, 180),
+    }):Play()
+    for _, obj in ipairs(LoadingContainer:GetDescendants()) do
+        if obj:IsA("TextLabel") then
+            TweenService:Create(obj, fadeInfo, { TextTransparency = 1 }):Play()
+        elseif obj:IsA("Frame") then
+            TweenService:Create(obj, fadeInfo, { BackgroundTransparency = 1 }):Play()
+        elseif obj:IsA("UIStroke") then
+            TweenService:Create(obj, fadeInfo, { Transparency = 1 }):Play()
+        end
+    end
+    task.wait(0.5)
+    ScreenGui:Destroy()
+end
+
 task.wait(0.4)
 setProgress(20)
 setStatus("Определение игры...", CONFIG.SubTextColor)
@@ -202,22 +223,7 @@ if not scriptInfo then
     GameLabel.Text = "PlaceId: " .. placeId
 
     task.wait(2.5)
-
-    local fadeInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(LoadingScreen, fadeInfo, { BackgroundTransparency = 1 }):Play()
-    TweenService:Create(LoadingContainer, fadeInfo, { BackgroundTransparency = 1 }):Play()
-    for _, obj in ipairs(LoadingContainer:GetDescendants()) do
-        if obj:IsA("TextLabel") then
-            TweenService:Create(obj, fadeInfo, { TextTransparency = 1 }):Play()
-        elseif obj:IsA("Frame") then
-            TweenService:Create(obj, fadeInfo, { BackgroundTransparency = 1 }):Play()
-        elseif obj:IsA("UIStroke") then
-            TweenService:Create(obj, fadeInfo, { Transparency = 1 }):Play()
-        end
-    end
-
-    task.wait(0.55)
-    ScreenGui:Destroy()
+    hideLoader()
     return
 end
 
@@ -241,48 +247,13 @@ if not fetchOk or not code or #code == 0 then
     GameLabel.Text = "Скрипт недоступен"
 
     task.wait(2.5)
-
-    local fadeInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(LoadingScreen, fadeInfo, { BackgroundTransparency = 1 }):Play()
-    TweenService:Create(LoadingContainer, fadeInfo, { BackgroundTransparency = 1 }):Play()
-    for _, obj in ipairs(LoadingContainer:GetDescendants()) do
-        if obj:IsA("TextLabel") then
-            TweenService:Create(obj, fadeInfo, { TextTransparency = 1 }):Play()
-        elseif obj:IsA("Frame") then
-            TweenService:Create(obj, fadeInfo, { BackgroundTransparency = 1 }):Play()
-        elseif obj:IsA("UIStroke") then
-            TweenService:Create(obj, fadeInfo, { Transparency = 1 }):Play()
-        end
-    end
-
-    task.wait(0.55)
-    ScreenGui:Destroy()
+    hideLoader()
     return
 end
 
 setProgress(85)
 setStatus("Запуск...", CONFIG.OnlineColor)
 task.wait(0.3)
-
-local function hideLoader()
-    local fadeInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(LoadingScreen, fadeInfo, { BackgroundTransparency = 1 }):Play()
-    TweenService:Create(LoadingContainer, fadeInfo, {
-        BackgroundTransparency = 1,
-        Size = UDim2.fromOffset(380, 180),
-    }):Play()
-    for _, obj in ipairs(LoadingContainer:GetDescendants()) do
-        if obj:IsA("TextLabel") then
-            TweenService:Create(obj, fadeInfo, { TextTransparency = 1 }):Play()
-        elseif obj:IsA("Frame") then
-            TweenService:Create(obj, fadeInfo, { BackgroundTransparency = 1 }):Play()
-        elseif obj:IsA("UIStroke") then
-            TweenService:Create(obj, fadeInfo, { Transparency = 1 }):Play()
-        end
-    end
-    task.wait(0.5)
-    ScreenGui:Destroy()
-end
 
 setProgress(100)
 task.wait(0.3)
