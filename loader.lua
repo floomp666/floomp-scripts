@@ -1,6 +1,7 @@
 --[[
     Floomp — Loader
     Fullscreen ASCII loader. Detects game by PlaceId, falls back to universal.
+    Discord button in bottom-right corner.
 ]]
 
 local Players          = game:GetService("Players")
@@ -31,10 +32,10 @@ end
 
 -- ============ СПИСОК СКРИПТОВ ============
 local SCRIPTS = {
-    [9872472334]      = { name = "Evade",        url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/evade.lua" },
-    [286090429]       = { name = "Arsenal",      url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/arsenal.lua" },
-    [1962086868]      = { name = "Tower of Hell",url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/toh.lua" },
-    [114234929420007] = { name = "BloxStrike",   url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/bloxstrike.lua" },
+    [9872472334]      = { name = "Evade",         url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/evade.lua" },
+    [286090429]       = { name = "Arsenal",       url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/arsenal.lua" },
+    [1962086868]      = { name = "Tower of Hell", url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/toh.lua" },
+    [114234929420007] = { name = "BloxStrike",    url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/bloxstrike.lua" },
 }
 
 -- загружается, если PlaceId не найден в SCRIPTS
@@ -42,6 +43,9 @@ local DEFAULT_SCRIPT = {
     name = "Universal",
     url  = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/universal.lua",
 }
+
+-- ссылка на Discord
+local DISCORD_URL = "https://discord.gg/ТВОЙ_ИНВАЙТ"
 
 -- ============ SCREENGUI ============
 local ScreenGui = Create("ScreenGui", {
@@ -64,6 +68,7 @@ end
 local THEME = {
     Background = Color3.fromRGB(10, 11, 16),
     Panel      = Color3.fromRGB(17, 19, 27),
+    Card       = Color3.fromRGB(24, 27, 38),
     Hover      = Color3.fromRGB(36, 41, 56),
     Accent     = Color3.fromRGB(145, 112, 255),
     Border     = Color3.fromRGB(47, 51, 69),
@@ -276,10 +281,171 @@ local function hideLoader()
     end
 
     task.wait(0.6)
-    if ScreenGui and ScreenGui.Parent then
-        ScreenGui:Destroy()
-    end
 end
+
+-- ================================================================
+-- DISCORD BUTTON
+-- ================================================================
+
+local DiscordButton = Create("Frame", {
+    Name = "DiscordButton",
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, 300, 1, -22),
+    Size = UDim2.fromOffset(260, 56),
+    BackgroundColor3 = THEME.Panel,
+    BackgroundTransparency = 0.05,
+    BorderSizePixel = 0,
+    ZIndex = 510,
+    Parent = ScreenGui,
+})
+Corner(DiscordButton, 12)
+local discordStroke = Create("UIStroke", {
+    Color = Color3.fromRGB(88, 101, 242),
+    Thickness = 1,
+    Transparency = 0.3,
+    ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+    Parent = DiscordButton,
+})
+
+Create("Frame", {
+    Position = UDim2.fromOffset(0, 10),
+    Size = UDim2.new(0, 3, 1, -20),
+    BackgroundColor3 = Color3.fromRGB(88, 101, 242),
+    BorderSizePixel = 0,
+    ZIndex = 511,
+    Parent = DiscordButton,
+})
+
+local iconBox = Create("Frame", {
+    Position = UDim2.fromOffset(14, 12),
+    Size = UDim2.fromOffset(32, 32),
+    BackgroundColor3 = THEME.Card,
+    BackgroundTransparency = 0,
+    BorderSizePixel = 0,
+    ZIndex = 520,
+    Parent = DiscordButton,
+})
+Corner(iconBox, 8)
+
+Create("ImageLabel", {
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    Position = UDim2.fromScale(0.5, 0.5),
+    Size = UDim2.fromOffset(22, 22),
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    Image = "rbxassetid://15465699788",
+    ScaleType = Enum.ScaleType.Fit,
+    ZIndex = 521,
+    Parent = iconBox,
+})
+
+Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(56, 10),
+    Size = UDim2.new(1, -110, 0, 20),
+    Text = "Join our Discord",
+    TextSize = 14,
+    TextColor3 = THEME.Text,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 511,
+    Parent = DiscordButton,
+})
+
+Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(56, 30),
+    Size = UDim2.new(1, -110, 0, 16),
+    Text = "updates, support, scripts",
+    TextSize = 11,
+    TextColor3 = THEME.Muted,
+    Font = Enum.Font.Gotham,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 511,
+    Parent = DiscordButton,
+})
+
+local discordClose = Create("TextButton", {
+    AnchorPoint = Vector2.new(1, 0),
+    Position = UDim2.new(1, -6, 0, 6),
+    Size = UDim2.fromOffset(22, 22),
+    BackgroundColor3 = THEME.Hover,
+    Text = "×",
+    TextSize = 16,
+    TextColor3 = THEME.Muted,
+    Font = Enum.Font.GothamBold,
+    AutoButtonColor = false,
+    ZIndex = 512,
+    Parent = DiscordButton,
+})
+Corner(discordClose, 6)
+
+local discordClick = Create("TextButton", {
+    Position = UDim2.fromOffset(0, 0),
+    Size = UDim2.new(1, -30, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "",
+    ZIndex = 511,
+    Parent = DiscordButton,
+})
+
+task.delay(0.2, function()
+    TweenService:Create(DiscordButton, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1, -22, 1, -22),
+    }):Play()
+end)
+
+discordClick.MouseEnter:Connect(function()
+    TweenService:Create(DiscordButton, TweenInfo.new(0.2), {
+        BackgroundColor3 = THEME.Card,
+    }):Play()
+    TweenService:Create(discordStroke, TweenInfo.new(0.2), {
+        Color = Color3.fromRGB(115, 128, 255),
+        Transparency = 0,
+    }):Play()
+end)
+discordClick.MouseLeave:Connect(function()
+    TweenService:Create(DiscordButton, TweenInfo.new(0.2), {
+        BackgroundColor3 = THEME.Panel,
+    }):Play()
+    TweenService:Create(discordStroke, TweenInfo.new(0.2), {
+        Color = Color3.fromRGB(88, 101, 242),
+        Transparency = 0.3,
+    }):Play()
+end)
+
+discordClick.Activated:Connect(function()
+    pcall(function()
+        if setclipboard then setclipboard(DISCORD_URL) end
+    end)
+    pcall(function()
+        game:GetService("GuiService"):OpenBrowserWindow(DISCORD_URL)
+    end)
+end)
+
+discordClose.MouseEnter:Connect(function()
+    TweenService:Create(discordClose, TweenInfo.new(0.2), {
+        BackgroundColor3 = Color3.fromRGB(91, 39, 55),
+        TextColor3 = THEME.Red,
+    }):Play()
+end)
+discordClose.MouseLeave:Connect(function()
+    TweenService:Create(discordClose, TweenInfo.new(0.2), {
+        BackgroundColor3 = THEME.Hover,
+        TextColor3 = THEME.Muted,
+    }):Play()
+end)
+
+discordClose.Activated:Connect(function()
+    TweenService:Create(DiscordButton, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+        Position = UDim2.new(1, 300, 1, -22),
+        BackgroundTransparency = 1,
+    }):Play()
+    task.wait(0.35)
+    if DiscordButton and DiscordButton.Parent then
+        DiscordButton:Destroy()
+    end
+end)
 
 -- ================================================================
 -- ОПРЕДЕЛЕНИЕ ИГРЫ И ЗАГРУЗКА
