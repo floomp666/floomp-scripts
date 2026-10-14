@@ -1,25 +1,26 @@
 --[[
     Floomp — Loader
+    ASCII Terminal Design (Variant F)
 ]]
 
 local Players          = game:GetService("Players")
 local TweenService     = game:GetService("TweenService")
-local RunService       = game:GetService("RunService")
 local LocalPlayer      = Players.LocalPlayer
 
 local CONFIG = {
-    BgTop        = Color3.fromRGB(38, 42, 56),
-    BgBottom     = Color3.fromRGB(22, 24, 34),
-    Accent       = Color3.fromRGB(100, 160, 255),
-    AccentDark   = Color3.fromRGB(64, 116, 200),
-    AccentGlow   = Color3.fromRGB(140, 190, 255),
-    TextColor    = Color3.fromRGB(240, 244, 250),
-    SubTextColor = Color3.fromRGB(150, 158, 176),
-    OnlineColor  = Color3.fromRGB(86, 220, 130),
-    StrokeLight  = Color3.fromRGB(80, 88, 110),
-    StrokeDark   = Color3.fromRGB(15, 16, 22),
-    Font         = Enum.Font.Gotham,
-    FontBold     = Enum.Font.GothamBold,
+    BgTop        = Color3.fromRGB(10, 11, 16),
+    BgBottom     = Color3.fromRGB(17, 19, 27),
+    Panel        = Color3.fromRGB(17, 19, 27),
+    Hover        = Color3.fromRGB(36, 41, 56),
+    Accent       = Color3.fromRGB(145, 112, 255),
+    AccentDark   = Color3.fromRGB(91, 65, 199),
+    AccentGlow   = Color3.fromRGB(175, 148, 255),
+    TextColor    = Color3.fromRGB(243, 244, 252),
+    SubTextColor = Color3.fromRGB(142, 149, 169),
+    OnlineColor  = Color3.fromRGB(112, 230, 170),
+    ErrorColor   = Color3.fromRGB(255, 105, 125),
+    Border       = Color3.fromRGB(47, 51, 69),
+    FontCode     = Enum.Font.Code,
 }
 
 local BRAND_NAME = "Floomp"
@@ -57,16 +58,7 @@ local function Stroke(parent, color, thickness, transparency)
     })
 end
 
-local function Gradient(parent, color1, color2, rotation)
-    return Create("UIGradient", {
-        Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, color1),
-            ColorSequenceKeypoint.new(1, color2),
-        }),
-        Rotation = rotation or 90,
-        Parent = parent,
-    })
-end
+-- ============ SCREENGUI ============
 
 local ScreenGui = Create("ScreenGui", {
     Name = BRAND_NAME .. "Loader",
@@ -85,133 +77,217 @@ if not ScreenGui.Parent then
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- фон невидим, клики по игре не перекрывает
+-- ============ LOADING SCREEN ============
+
 local LoadingScreen = Create("Frame", {
     Size = UDim2.fromScale(1, 1),
-    BackgroundTransparency = 1,
+    BackgroundColor3 = CONFIG.BgTop,
+    BackgroundTransparency = 0.3,
     BorderSizePixel = 0,
     ZIndex = 500,
     Parent = ScreenGui,
 })
 
 local LoadingContainer = Create("Frame", {
-    Size = UDim2.fromOffset(420, 200),
+    Size = UDim2.fromOffset(540, 200),
     Position = UDim2.fromScale(0.5, 0.5),
     AnchorPoint = Vector2.new(0.5, 0.5),
-    BackgroundColor3 = CONFIG.BgBottom,
+    BackgroundColor3 = CONFIG.Panel,
     BorderSizePixel = 0,
     ZIndex = 501,
     Parent = LoadingScreen,
 })
-Corner(LoadingContainer, UDim.new(0, 16))
-Stroke(LoadingContainer, CONFIG.StrokeLight, 1, 0.3)
-Gradient(LoadingContainer, CONFIG.BgTop, CONFIG.BgBottom, 90)
+Corner(LoadingContainer, UDim.new(0, 8))
+Stroke(LoadingContainer, CONFIG.Border, 1, 0.2)
 
-Create("TextLabel", {
-    Size = UDim2.new(1, 0, 0, 44),
-    Position = UDim2.fromOffset(0, 22),
+-- логотип
+local LoadingLogo = Create("TextLabel", {
     BackgroundTransparency = 1,
-    Font = CONFIG.FontBold,
-    Text = BRAND_NAME,
-    TextColor3 = CONFIG.AccentGlow,
-    TextSize = 36,
-    ZIndex = 502,
-    Parent = LoadingContainer,
-})
-
-local StatusLabel = Create("TextLabel", {
-    Size = UDim2.new(1, 0, 0, 18),
-    Position = UDim2.fromOffset(0, 66),
-    BackgroundTransparency = 1,
-    Font = CONFIG.Font,
-    Text = "Определение игры...",
-    TextColor3 = CONFIG.SubTextColor,
-    TextSize = 13,
-    ZIndex = 502,
-    Parent = LoadingContainer,
-})
-
-local GameLabel = Create("TextLabel", {
-    Size = UDim2.new(1, 0, 0, 22),
-    Position = UDim2.fromOffset(0, 88),
-    BackgroundTransparency = 1,
-    Font = CONFIG.FontBold,
-    Text = "",
+    Position = UDim2.fromOffset(24, 20),
+    Size = UDim2.new(1, -48, 0, 30),
+    Text = "FLOOMP  //  SYSTEM LOADER",
+    TextSize = 14,
     TextColor3 = CONFIG.Accent,
-    TextSize = 18,
+    Font = CONFIG.FontCode,
+    TextXAlignment = Enum.TextXAlignment.Left,
     ZIndex = 502,
     Parent = LoadingContainer,
 })
 
-local LoadingBarBg = Create("Frame", {
-    Size = UDim2.fromOffset(340, 8),
-    Position = UDim2.new(0.5, -170, 0, 130),
-    BackgroundColor3 = Color3.fromRGB(40, 44, 58),
+-- разделитель
+local LoadingDivider = Create("Frame", {
+    Position = UDim2.fromOffset(24, 56),
+    Size = UDim2.new(1, -48, 0, 1),
+    BackgroundColor3 = CONFIG.Border,
+    BackgroundTransparency = 0.4,
     BorderSizePixel = 0,
     ZIndex = 502,
     Parent = LoadingContainer,
 })
-Corner(LoadingBarBg, UDim.new(1, 0))
-Stroke(LoadingBarBg, CONFIG.StrokeDark, 1, 0.5)
 
-local LoadingBarFill = Create("Frame", {
+-- ASCII-бар
+local LoadingAsciiBar = Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(24, 72),
+    Size = UDim2.new(1, -48, 0, 28),
+    Text = "[░░░░░░░░░░░░░░░░░░░░]  0%",
+    TextSize = 18,
+    TextColor3 = CONFIG.Accent,
+    Font = CONFIG.FontCode,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 502,
+    Parent = LoadingContainer,
+})
+
+-- статус (основная строка лога)
+local StatusLabel = Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(24, 108),
+    Size = UDim2.new(1, -48, 0, 20),
+    Text = "> initializing...",
+    TextSize = 13,
+    TextColor3 = CONFIG.SubTextColor,
+    Font = CONFIG.FontCode,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 502,
+    Parent = LoadingContainer,
+})
+
+-- имя игры (вторичная строка)
+local GameLabel = Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(24, 128),
+    Size = UDim2.new(1, -48, 0, 20),
+    Text = "",
+    TextSize = 13,
+    TextColor3 = CONFIG.AccentGlow,
+    Font = CONFIG.FontCode,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextTransparency = 1,
+    ZIndex = 502,
+    Parent = LoadingContainer,
+})
+
+-- мигающий курсор
+local LoadingCursor = Create("TextLabel", {
+    BackgroundTransparency = 1,
+    Position = UDim2.fromOffset(24, 148),
+    Size = UDim2.fromOffset(20, 20),
+    Text = "▌",
+    TextSize = 14,
+    TextColor3 = CONFIG.Accent,
+    Font = CONFIG.FontCode,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 502,
+    Parent = LoadingContainer,
+})
+
+-- прогресс-линия снизу
+local LoadingProgressTrack = Create("Frame", {
+    Position = UDim2.fromOffset(24, 172),
+    Size = UDim2.new(1, -48, 0, 2),
+    BackgroundColor3 = CONFIG.Hover,
+    BorderSizePixel = 0,
+    ZIndex = 502,
+    Parent = LoadingContainer,
+})
+Corner(LoadingProgressTrack, UDim.new(0, 2))
+
+local LoadingProgressFill = Create("Frame", {
     Size = UDim2.new(0, 0, 1, 0),
     BackgroundColor3 = CONFIG.Accent,
     BorderSizePixel = 0,
     ZIndex = 503,
-    Parent = LoadingBarBg,
+    Parent = LoadingProgressTrack,
 })
-Corner(LoadingBarFill, UDim.new(1, 0))
-Gradient(LoadingBarFill, CONFIG.AccentGlow, CONFIG.AccentDark, 0)
+Corner(LoadingProgressFill, UDim.new(0, 2))
 
-local LoadingPercent = Create("TextLabel", {
-    Size = UDim2.fromOffset(340, 20),
-    Position = UDim2.new(0.5, -170, 0, 148),
-    BackgroundTransparency = 1,
-    Font = CONFIG.Font,
-    Text = "0%",
-    TextColor3 = CONFIG.TextColor,
-    TextSize = 13,
-    ZIndex = 502,
-    Parent = LoadingContainer,
-})
+-- ============ CURSOR BLINK ============
+
+local CursorActive = true
+
+task.spawn(function()
+    while CursorActive do
+        if LoadingCursor and LoadingCursor.Parent then
+            LoadingCursor.TextTransparency = 0
+        end
+        task.wait(0.5)
+
+        if LoadingCursor and LoadingCursor.Parent then
+            LoadingCursor.TextTransparency = 1
+        end
+        task.wait(0.5)
+    end
+end)
+
+-- ============ ASCII BAR ============
+
+local BAR_LENGTH = 20
+
+local function buildAsciiBar(percent)
+    percent = math.clamp(percent, 0, 100)
+    local filled = math.floor((percent / 100) * BAR_LENGTH + 0.5)
+
+    local bar = ""
+    for i = 1, BAR_LENGTH do
+        if i <= filled then
+            bar = bar .. "▓"
+        else
+            bar = bar .. "░"
+        end
+    end
+
+    return "[" .. bar .. "]  " .. tostring(math.floor(percent)) .. "%"
+end
 
 local function setProgress(value)
     value = math.clamp(value, 0, 100)
-    TweenService:Create(LoadingBarFill, TweenInfo.new(0.25), {
+    LoadingAsciiBar.Text = buildAsciiBar(value)
+
+    TweenService:Create(LoadingProgressFill, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
         Size = UDim2.new(value / 100, 0, 1, 0),
     }):Play()
-    LoadingPercent.Text = math.floor(value) .. "%"
 end
 
 local function setStatus(text, color)
-    StatusLabel.Text = text
+    StatusLabel.Text = "> " .. text
     if color then StatusLabel.TextColor3 = color end
 end
 
--- прячет только бокс, фон не трогает
+local function setGame(text)
+    GameLabel.Text = "> " .. text
+    TweenService:Create(GameLabel, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+end
+
+-- ============ HIDE LOADER ============
+
 local function hideLoader()
+    CursorActive = false
+
     local fadeInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    TweenService:Create(LoadingContainer, fadeInfo, {
-        BackgroundTransparency = 1,
-        Size = UDim2.fromOffset(380, 180),
-    }):Play()
+
+    TweenService:Create(LoadingScreen, fadeInfo, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(LoadingContainer, fadeInfo, {BackgroundTransparency = 1}):Play()
+
     for _, obj in ipairs(LoadingContainer:GetDescendants()) do
         if obj:IsA("TextLabel") then
-            TweenService:Create(obj, fadeInfo, { TextTransparency = 1 }):Play()
+            TweenService:Create(obj, fadeInfo, {TextTransparency = 1}):Play()
         elseif obj:IsA("Frame") then
-            TweenService:Create(obj, fadeInfo, { BackgroundTransparency = 1 }):Play()
+            TweenService:Create(obj, fadeInfo, {BackgroundTransparency = 1}):Play()
         elseif obj:IsA("UIStroke") then
-            TweenService:Create(obj, fadeInfo, { Transparency = 1 }):Play()
+            TweenService:Create(obj, fadeInfo, {Transparency = 1}):Play()
         end
     end
+
     task.wait(0.5)
     ScreenGui:Destroy()
 end
 
+-- ============ MAIN FLOW ============
+
 task.wait(0.4)
 setProgress(20)
-setStatus("Определение игры...", CONFIG.SubTextColor)
+setStatus("detecting game...", CONFIG.SubTextColor)
 task.wait(0.5)
 
 local placeId = game.PlaceId
@@ -219,21 +295,20 @@ local scriptInfo = SCRIPTS[placeId]
 
 if not scriptInfo then
     setProgress(100)
-    setStatus("Игра не поддерживается", Color3.fromRGB(255, 80, 80))
-    GameLabel.Text = "PlaceId: " .. placeId
-
+    setStatus("unsupported game", CONFIG.ErrorColor)
+    setGame("PlaceId: " .. placeId)
     task.wait(2.5)
     hideLoader()
     return
 end
 
 setProgress(45)
-GameLabel.Text = scriptInfo.name
-setStatus("Подготовка к загрузке...", CONFIG.SubTextColor)
+setGame(scriptInfo.name)
+setStatus("preparing...", CONFIG.SubTextColor)
 task.wait(0.5)
 
 setProgress(65)
-setStatus("Загрузка скрипта...", CONFIG.AccentGlow)
+setStatus("downloading script...", CONFIG.AccentGlow)
 task.wait(0.4)
 
 local code = nil
@@ -243,16 +318,15 @@ end)
 
 if not fetchOk or not code or #code == 0 then
     setProgress(100)
-    setStatus("Ошибка загрузки", Color3.fromRGB(255, 80, 80))
-    GameLabel.Text = "Скрипт недоступен"
-
+    setStatus("download failed", CONFIG.ErrorColor)
+    setGame("script unavailable")
     task.wait(2.5)
     hideLoader()
     return
 end
 
 setProgress(85)
-setStatus("Запуск...", CONFIG.OnlineColor)
+setStatus("launching...", CONFIG.OnlineColor)
 task.wait(0.3)
 
 setProgress(100)
@@ -267,10 +341,10 @@ local runOk, runErr = pcall(function()
     if fn then
         fn()
     else
-        error("loadstring вернул nil")
+        error("loadstring returned nil")
     end
 end)
 
 if not runOk then
-    warn("[Floomp] Ошибка запуска скрипта:", runErr)
+    warn("[Floomp] Script launch error:", runErr)
 end
