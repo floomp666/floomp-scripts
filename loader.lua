@@ -37,6 +37,7 @@ local SCRIPTS = {
     [1962086868]      = { name = "Tower of Hell", url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/toh.lua" },
     [114234929420007] = { name = "BloxStrike",    url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/bloxstrike.lua" },
     [10324346056]      = { name = "Evade",         url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/evade.lua" },
+    [10808838353]      = { name = "Evade",         url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/evade.lua" },
 }
 
 -- загружается, если PlaceId не найден в SCRIPTS
