@@ -36,6 +36,7 @@ local SCRIPTS = {
     [286090429]       = { name = "Arsenal",       url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/arsenal.lua" },
     [1962086868]      = { name = "Tower of Hell", url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/toh.lua" },
     [114234929420007] = { name = "BloxStrike",    url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/bloxstrike.lua" },
+    [10324346056]      = { name = "Evade",         url = "https://raw.githubusercontent.com/floomp666/floomp-scripts/refs/heads/main/evade.lua" },
 }
 
 -- загружается, если PlaceId не найден в SCRIPTS
@@ -45,7 +46,7 @@ local DEFAULT_SCRIPT = {
 }
 
 -- ссылка на Discord
-local DISCORD_URL = "https://discord.gg/ТВОЙ_ИНВАЙТ"
+local DISCORD_URL = "https://discord.gg/VbPTEmhXwy"
 
 -- ============ SCREENGUI ============
 local ScreenGui = Create("ScreenGui", {
